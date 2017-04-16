@@ -5,6 +5,7 @@ class Player {
     private int yCoordinate = 11 * PacMan.CHUNK_RATIO;
     private Direction direction = Direction.NONE;
     private Direction lastDirection = Direction.LEFT;
+    private int points;
 
     void changeDirection(Direction newDirection) {
         lastDirection = direction;
@@ -45,6 +46,7 @@ class Player {
                 break;
         }
         boolean isClear = true;
+        boolean skipPoint = false;
         for (int i = 0; i < moveFront.length; i++) {
             switch (moveFront[i]) {
                 case WALL:
@@ -63,16 +65,23 @@ class Player {
                     }
                     break;
                 case POINT:
-                    // TODO: point code
+                    if (!skipPoint) {
+                        skipPoint = true;
+                        eat(moveFront[i]);
+                    }
                     break;
                 case BALL:
-                    // TODO: ball code
+                    if (!skipPoint) {
+                        skipPoint = true;
+                        eat(moveFront[i]);
+                        // TODO: ghost scared code
+                    }
                     break;
                 case RED:
                 case CYAN:
                 case PINK:
                 case ORANGE:
-                    // TODO: player dies
+                    PacMan.gameLose();
                     break;
                 case SCARED_RED:
                     // TODO: ghost dies
@@ -87,7 +96,7 @@ class Player {
                     // TODO: ghost dies
                     break;
                 default:
-                    System.err.println("Error: reached break in Player.isMovePossible");
+                    System.err.println("Error in Player.isMovePossible: Unhandled Case.");
                     break;
             }
         }
@@ -98,6 +107,41 @@ class Player {
         for (int vertical = yCoordinate; vertical < yCoordinate + PacMan.CHUNK_RATIO; vertical++) {
             for (int horizontal = start; horizontal < start + PacMan.CHUNK_RATIO; horizontal++) {
                 PacMan.board[vertical][horizontal] = Square.CLEAR;
+            }
+        }
+    }
+
+    private void eat(Square delete) {
+        final int POINTS_ON_BOARD = 151;
+        points++;
+        int x = xCoordinate;
+        int y = yCoordinate;
+        switch (direction) {
+            case LEFT:
+                x -= 16;
+                break;
+            case RIGHT:
+                x += 16;
+                break;
+            case UP:
+                y -= 16;
+                break;
+            case DOWN:
+                y += 16;
+                break;
+        }
+        deleteInChunk(delete, x, y);
+        if (points >= POINTS_ON_BOARD) {
+            PacMan.gameWin();
+        }
+    }
+
+    private void deleteInChunk(Square delete, int x, int y) {
+        for (int vertical = y; vertical < y + PacMan.CHUNK_RATIO; vertical++) {
+            for (int horizontal = x; horizontal < x + PacMan.CHUNK_RATIO; horizontal++) {
+                if (PacMan.board[vertical][horizontal] == delete) {
+                    PacMan.board[vertical][horizontal] = Square.CLEAR;
+                }
             }
         }
     }

@@ -5,9 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 public class PacMan {
 
@@ -18,9 +16,13 @@ public class PacMan {
     static final int HORIZONTAL_SQUARES = HORIZONTAL_CHUNKS * CHUNK_RATIO;
     private static final int NANOSECONDS_PER_SECOND = 1000000000;
     private static final int NANOSECONDS_PER_FRAME = NANOSECONDS_PER_SECOND / 50;
+    private static final String GAME_TITLE = "Pac-Man";
+
+    private static final JFrame frame = new JFrame(GAME_TITLE);
 
     static Square[][] board = new Square[VERTICAL_SQUARES][HORIZONTAL_SQUARES];
 
+    private static boolean isGameOngoing = true;
     private Player player = new Player();
 
     public static void main(String[] args) {
@@ -180,8 +182,6 @@ public class PacMan {
     }
 
     private void configureGUI() {
-        final String GAME_TITLE = "Pac-Man";
-        final JFrame frame = new JFrame(GAME_TITLE);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setLayout(new BorderLayout());
@@ -231,13 +231,37 @@ public class PacMan {
     private void runTimeManager() {
         long lastFrameTime = System.nanoTime();
         long currentTime;
-        while (true) {
+        while (isGameOngoing) {
             currentTime = System.nanoTime();
             final long timeSinceLastFrame = currentTime - lastFrameTime;
             if (timeSinceLastFrame >= NANOSECONDS_PER_FRAME) {
                 executeFrame();
                 lastFrameTime = System.nanoTime();
             }
+        }
+    }
+
+    static void gameWin() {
+        gameEndMessage("Congratulations, You Won!");
+        System.exit(0);
+    }
+
+    static void gameLose() {
+        gameEndMessage("Sadly, You Lost...");
+        System.exit(0);
+    }
+
+    private static void gameEndMessage(String text) {
+        if (isGameOngoing) {
+            isGameOngoing = false;
+            final String[] options = new String[]{"Continue"};
+            final int check = JOptionPane.showOptionDialog(null, text, GAME_TITLE, JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+            if (check == -1) {
+                System.exit(0);
+            }
+        } else {
+            System.err.println("Error in PacMan.gameEndMessage: multiple win and/or lose instances were called.");
         }
     }
 
@@ -311,6 +335,9 @@ public class PacMan {
                         case SCARED_ORANGE:
                         case SCARED_PINK:
                             g2d.setColor(Color.BLUE);
+                            break;
+                        default:
+                            System.err.println("Error in PacMan.GridPane.paintComponent: Invalid Color.");
                             break;
                     }
                     final Rectangle cell = cells.get(horizontal + vertical * HORIZONTAL_SQUARES);
