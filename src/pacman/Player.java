@@ -16,7 +16,7 @@ class Player {
         if (direction == Direction.NONE) {
             move();
         } else {
-            System.err.println("Error in Player.paintPlayer: called improperly");
+            System.err.println("Error in Player.firstPaint: called improperly.");
         }
     }
 
@@ -83,7 +83,7 @@ class Player {
                     // TODO: ghost dies
                     break;
                 default:
-                    System.err.println("Error in Player.isMovePossible: Unhandled Case.");
+                    System.err.println("Error in Player.isMovePossible: unhandled case.");
                     break;
             }
         }
@@ -114,7 +114,7 @@ class Player {
                 break;
             default:
                 if (direction != Direction.NONE) {
-                    System.err.println("Error in Player.isMovePossible: default hit with wrong direction.");
+                    System.err.println("Error in Player.setMoveFront: default hit with no direction.");
                 }
                 for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
                     moveFront[i] = Square.CLEAR;

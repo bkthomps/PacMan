@@ -84,7 +84,7 @@ public class PacMan {
                         setRightColumn(horizontal, vertical);
                         break;
                     default:
-                        System.err.println("Error In PacMan.initializeBoard: Unhandled Case.");
+                        System.err.println("Error In PacMan.initializeBoard: unhandled case.");
                         setChunk(horizontal, vertical, Square.CLEAR);
                         break;
                 }
@@ -338,7 +338,7 @@ public class PacMan {
                             g2d.setColor(Color.BLUE);
                             break;
                         default:
-                            System.err.println("Error in PacMan.GridPane.paintComponent: Invalid Color.");
+                            System.err.println("Error in PacMan.GridPane.paintComponent: invalid color.");
                             break;
                     }
                     final Rectangle cell = cells.get(horizontal + vertical * HORIZONTAL_SQUARES);
