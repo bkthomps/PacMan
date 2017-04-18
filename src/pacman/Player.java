@@ -16,7 +16,7 @@ class Player {
         if (direction == Direction.NONE) {
             move();
         } else {
-            System.err.println("Error in Player.firstPaint: called improperly.");
+            System.err.println("Error in Player.firstPaint: should only be called when there is no direction.");
         }
     }
 
@@ -138,16 +138,16 @@ class Player {
         int y = yCoordinate;
         switch (direction) {
             case LEFT:
-                x -= 16;
+                x -= PacMan.CHUNK_RATIO;
                 break;
             case RIGHT:
-                x += 16;
+                x += PacMan.CHUNK_RATIO;
                 break;
             case UP:
-                y -= 16;
+                y -= PacMan.CHUNK_RATIO;
                 break;
             case DOWN:
-                y += 16;
+                y += PacMan.CHUNK_RATIO;
                 break;
         }
         deleteInChunk(delete, x, y);

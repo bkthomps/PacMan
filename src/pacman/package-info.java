@@ -1,6 +1,6 @@
 /**
  * Bailey Thompson <br>
- * Pac-Man (0.1.4) <br>
+ * Pac-Man (0.1.5) <br>
  * 17 April 2017 <br>
  * <br>
  * This is a remake of the popular arcade game, Pac-Man.&nbsp;The player can navigate the map by using the arrow keys on
