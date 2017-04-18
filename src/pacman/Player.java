@@ -12,8 +12,16 @@ class Player {
         direction = newDirection;
     }
 
+    void firstPaint() {
+        if (direction == Direction.NONE) {
+            move();
+        } else {
+            System.err.println("Error in Player.paintPlayer: called improperly");
+        }
+    }
+
     void attemptMove() {
-        if (direction == Direction.NONE || isMovePossible()) {
+        if (isMovePossible()) {
             move();
         } else {
             lastDirection = direction;
@@ -23,28 +31,7 @@ class Player {
 
     private boolean isMovePossible() {
         Square[] moveFront = new Square[PacMan.CHUNK_RATIO];
-        switch (direction) {
-            case LEFT:
-                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
-                    moveFront[i] = PacMan.board[yCoordinate + i][xCoordinate - 1];
-                }
-                break;
-            case RIGHT:
-                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
-                    moveFront[i] = PacMan.board[yCoordinate + i][xCoordinate + PacMan.CHUNK_RATIO];
-                }
-                break;
-            case UP:
-                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
-                    moveFront[i] = PacMan.board[yCoordinate - 1][xCoordinate + i];
-                }
-                break;
-            case DOWN:
-                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
-                    moveFront[i] = PacMan.board[yCoordinate + PacMan.CHUNK_RATIO][xCoordinate + i];
-                }
-                break;
-        }
+        setMoveFront(moveFront);
         boolean isClear = true;
         boolean skipPoint = false;
         for (int i = 0; i < moveFront.length; i++) {
@@ -101,6 +88,39 @@ class Player {
             }
         }
         return isClear;
+    }
+
+    private void setMoveFront(Square[] moveFront) {
+        switch (direction) {
+            case LEFT:
+                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
+                    moveFront[i] = PacMan.board[yCoordinate + i][xCoordinate - 1];
+                }
+                break;
+            case RIGHT:
+                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
+                    moveFront[i] = PacMan.board[yCoordinate + i][xCoordinate + PacMan.CHUNK_RATIO];
+                }
+                break;
+            case UP:
+                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
+                    moveFront[i] = PacMan.board[yCoordinate - 1][xCoordinate + i];
+                }
+                break;
+            case DOWN:
+                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
+                    moveFront[i] = PacMan.board[yCoordinate + PacMan.CHUNK_RATIO][xCoordinate + i];
+                }
+                break;
+            default:
+                if (direction != Direction.NONE) {
+                    System.err.println("Error in Player.isMovePossible: default hit with wrong direction.");
+                }
+                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
+                    moveFront[i] = Square.CLEAR;
+                }
+                break;
+        }
     }
 
     private void resetChunk(int start) {

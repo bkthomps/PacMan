@@ -33,6 +33,7 @@ public class PacMan {
     private void controlCentre() {
         initializeBoard();
         configureGUI();
+        player.firstPaint();
         runTimeManager();
     }
 
