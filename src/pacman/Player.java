@@ -4,12 +4,44 @@ class Player {
     private int xCoordinate = 9 * PacMan.CHUNK_RATIO;
     private int yCoordinate = 11 * PacMan.CHUNK_RATIO;
     private Direction direction = Direction.NONE;
+    private Direction nextDirection = Direction.NONE;
     private Direction lastDirection = Direction.LEFT;
     private int points;
 
     void changeDirection(Direction newDirection) {
-        lastDirection = direction;
-        direction = newDirection;
+        if (isDirectionSwitchPossible(newDirection)) {
+            lastDirection = direction;
+            direction = newDirection;
+            nextDirection = Direction.NONE;
+        } else {
+            nextDirection = newDirection;
+        }
+    }
+
+    private boolean isDirectionSwitchPossible(Direction newDirection) {
+        switch (newDirection) {
+            case LEFT:
+            case RIGHT:
+            case UP:
+            case DOWN:
+                Square[] moveFront = new Square[PacMan.CHUNK_RATIO];
+                setMoveFront(newDirection, moveFront);
+                boolean[] isClear = new boolean[PacMan.CHUNK_RATIO];
+                for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
+                    isClear[i] = (moveFront[i] == Square.CLEAR);
+                }
+                for (boolean i : isClear) {
+                    if (!i) {
+                        return false;
+                    }
+                }
+                return true;
+            case NONE:
+                return false;
+            default:
+                System.err.println("Error in Player.isDirectionSwitchPossible: hit default.");
+                return false;
+        }
     }
 
     void firstPaint() {
@@ -21,21 +53,23 @@ class Player {
     }
 
     void attemptMove() {
-        if (isMovePossible()) {
+        if (isMovePossible() && !isDirectionSwitchPossible(nextDirection)) {
             move();
-        } else {
+        } else if (nextDirection == Direction.NONE) {
             lastDirection = direction;
             direction = Direction.NONE;
+        } else {
+            changeDirection(nextDirection);
         }
     }
 
     private boolean isMovePossible() {
         Square[] moveFront = new Square[PacMan.CHUNK_RATIO];
-        setMoveFront(moveFront);
+        setMoveFront(direction, moveFront);
         boolean isClear = true;
         boolean skipPoint = false;
-        for (int i = 0; i < moveFront.length; i++) {
-            switch (moveFront[i]) {
+        for (Square i : moveFront) {
+            switch (i) {
                 case WALL:
                     isClear = false;
                     break;
@@ -54,13 +88,13 @@ class Player {
                 case POINT:
                     if (!skipPoint) {
                         skipPoint = true;
-                        eat(moveFront[i]);
+                        eat(i);
                     }
                     break;
                 case BALL:
                     if (!skipPoint) {
                         skipPoint = true;
-                        eat(moveFront[i]);
+                        eat(i);
                         // TODO: ghost scared code
                     }
                     break;
@@ -83,15 +117,15 @@ class Player {
                     // TODO: ghost dies
                     break;
                 default:
-                    System.err.println("Error in Player.isMovePossible: unhandled case.");
+                    System.err.println("Error in Player.isMovePossible: hit default.");
                     break;
             }
         }
         return isClear;
     }
 
-    private void setMoveFront(Square[] moveFront) {
-        switch (direction) {
+    private void setMoveFront(Direction moveDirection, Square[] moveFront) {
+        switch (moveDirection) {
             case LEFT:
                 for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
                     moveFront[i] = PacMan.board[yCoordinate + i][xCoordinate - 1];
@@ -113,7 +147,7 @@ class Player {
                 }
                 break;
             default:
-                if (direction != Direction.NONE) {
+                if (moveDirection != Direction.NONE) {
                     System.err.println("Error in Player.setMoveFront: default hit with no direction.");
                 }
                 for (int i = 0; i < PacMan.CHUNK_RATIO; i++) {
